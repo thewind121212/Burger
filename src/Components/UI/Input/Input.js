@@ -1,35 +1,53 @@
 import React from 'react';
+import { presetToOptions } from 'webpack/lib/Stats';
 import classes from './Input.css'
 
 const input = (props) => {
     let inputElement = null;
+    let inputClasses = [classes.InputElement]   
+    if (!props.isValid && props.touched) {
+        inputClasses.push(classes.InputWrong)
+    }
+
+     inputClasses = inputClasses.join(' ')
+
     switch (props.elementType) {
         case ('input'):
-            inputElement = <input className={classes.InputElement} 
+            inputElement = <input 
+            className={inputClasses} 
             onChange={props.change}
              {...props.elementConfig} value={props.value} />
             break;
         case ('textarea'): 
-            inputElement = <textarea className={classes.InputElement} {...props.elementConfig} value={props.value} />
+            inputElement = <textarea 
+            className={inputClasses} 
+            {...props.elementConfig} 
+            value={props.value} />
             break;
         case ('select'):
             inputElement = <select
-                className={classes.InputElement}
+                className={inputClasses}
                 onChange={props.change}
-                value={props.value}
-            >
+                value={props.value} >
                 {props.elementConfig.options.map( option => {
                     return (<option value={option.value} key={option.value} > {option.displayValue} </option>)
                 } )}
             </select>
             break;
         default:
-            inputElement = <input className={classes.InputElement} onChange={props.change} {...props.elementConfig} value={props.value}/>
+            inputElement = <input 
+            className={inputClasses} 
+            onChange={props.change} 
+            {...props.elementConfig} 
+            value={props.value}/>
         }
+
+
     return (
         <div className={classes.Input}>
             <label className={classes.label}>{props.label}</label>
             {inputElement}
+            <ul>{props.errorMessage}</ul>
         </div>
     )
 }

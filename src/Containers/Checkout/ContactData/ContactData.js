@@ -4,6 +4,7 @@ import classes from '../../Checkout/ContactData/ContactData.css'
 import Axios from '../../../axios-order'
 import Spiner from '../../../Components/UI/Spinner/Spinner' 
 import Input from '../../../Components/UI/Input/Input'
+import { isCompositeComponent } from 'react-dom/test-utils';
 
 class ContactData extends Component {
     state = {
@@ -14,7 +15,21 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'Your Name'
                         },
-                        value: ''
+                        value: '',
+                        validation: {
+                            required: true,
+                            maxLength: true
+                        },
+                        validationRule: {
+                            maxLength : 8
+                        },
+                        validationMessage: {
+                            required: 'The input is empty',
+                            maxLength: 'the input is too short at least 8 word'
+                        },
+                        valid: false,
+                        touched: false,
+
                 },
                 street: {
                     elementType: 'input',
@@ -22,7 +37,21 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'Street'
                         },
-                        value: ''
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        validationRule: {
+                            maxLength : 8
+                        },
+                        validationMessage: {
+                            required: 'The input is empty',
+                            maxLength: 'the input is too short at least 8 word'
+                        },
+                        valid: false,
+                        touched: false,
+                        valid: false,
+                        touched: false,
                 },
                 zipCode : {
                     elementType: 'input',
@@ -30,7 +59,21 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'ZIP CODE'
                         },
-                        value: ''
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        validationRule: {
+                            maxLength : 8
+                        },
+                        validationMessage: {
+                            required: 'The input is empty',
+                            maxLength: 'the input is too short at least 8 word'
+                        },
+                        valid: false,
+                        touched: false,
+                        valid: false,
+                        touched: false,
                 },
                 country: {
                     elementType: 'input',
@@ -38,7 +81,20 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'Country'
                         },
-                        value: ''
+                        validation: {
+                            required: true
+                        },
+                        validationRule: {
+                            maxLength : 8
+                        },
+                        validationMessage: {
+                            required: 'The input is empty',
+                            maxLength: 'the input is too short at least 8 word'
+                        },
+                        valid: false,
+                        touched: false,
+                        value: '',
+                        valid: false
                 },
                 email: {
                     elementType: 'input',
@@ -46,7 +102,21 @@ class ContactData extends Component {
                         type: 'email',
                         placeholder: 'Your Email'
                         },
-                        value: ''
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        validationRule: {
+                            maxLength : 8
+                        },
+                        validationMessage: {
+                            required: 'The input is empty',
+                            maxLength: 'the input is too short at least 8 word'
+                        },
+                        valid: false,
+                        touched: false,
+                        valid: false,
+                        touched: false,
                 },
                 deliveryMethod: {
                     elementType: 'select',
@@ -55,11 +125,44 @@ class ContactData extends Component {
                                     {value:'cheapest', displayValue: 'Cheapest'}    
                                  ]
                     },
-                        value: ''
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        validationMessage: {
+                            required: 'The input is empty',
+                            maxLength: 'the input is too short at least 8 word'
+                        },
+                        valid: false,
+                        touched: false,
+                        valid: true,
+                        touched: false,
                 }
         },
-        loading: false
+        loading: false,
+        formIsValid: false, 
     }
+
+
+          errorMessage = [];
+          errorDisplay = null;
+    
+          validationForm(input) {
+           let isValid = false;
+        if (input.validation.required) {
+            isValid = input.value.trim() !== "";
+            (!isValid) ? this.errorMessage.push(input.validationMessage.required) : console.log(input.value);
+            if(input.validation.maxLength) {
+                isValid = input.value.trim().length >= 8;
+                (!isValid) ? this.errorMessage.push(input.validationMessage.maxLength) : console.log('123')
+            }
+        }        
+        this.errorDisplay = this.errorMessage.map(error => {
+            return <li>{error}</li> 
+        })
+        return isValid
+    }          
+
 
     orderHandler = (event) => {
         event.preventDefault()
@@ -74,7 +177,6 @@ class ContactData extends Component {
             orderData : formData
         }
 
-        console.log(order)
 
          Axios.post('/orders.json', order )
              .then( response => {this.setState({loadding: false}) 
@@ -85,6 +187,8 @@ class ContactData extends Component {
     }
 
     inputChangeHandler = (event, input) => {
+       
+        this.errorMessage = []
         const updatedOrderForm = {
             ...this.state.orderForm
         }
@@ -92,12 +196,20 @@ class ContactData extends Component {
         const updatedFromElement =  {
             ...updatedOrderForm[input]
         }
+
+        updatedFromElement.touched = true;
         updatedFromElement.value = event.target.value 
         updatedOrderForm[input] = updatedFromElement
-        this.setState({orderForm:updatedOrderForm}) 
+        updatedFromElement.valid = this.validationForm(updatedFromElement)
+        let formValid = true;
+        for (input in updatedOrderForm) {
+            formValid = updatedOrderForm[input].valid && formValid
+        }
+        this.setState({orderForm:updatedOrderForm, formIsValid: formValid}) 
     }
 
     render() {
+
         const formElementsArray = []
         for (let key in this.state.orderForm) {
             formElementsArray.push({
@@ -111,9 +223,12 @@ class ContactData extends Component {
                                         elementType={formElement.config.elementType} 
                                         value={formElement.config.value} 
                                         elementConfig={formElement.config.elementConfig} 
-                                        change={(event) => this.inputChangeHandler(event, formElement.id)} />)
+                                        change={(event) => this.inputChangeHandler(event, formElement.id)} 
+                                        isValid={formElement.config.valid}
+                                        touched={formElement.config.touched}
+                                        errorMessage={this.errorDisplay} />)
                     })} 
-                    <Button btnType="Success"  > ORDER </Button>
+                    <Button btnType="Success" disabled={!this.state.formIsValid} > ORDER </Button>
                 </form>)
         if (this.state.loadding) {
             form = (<Spiner/>)
