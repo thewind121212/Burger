@@ -1,5 +1,4 @@
 import React from 'react';
-import { presetToOptions } from 'webpack/lib/Stats';
 import classes from './Input.css'
 
 const input = (props) => {

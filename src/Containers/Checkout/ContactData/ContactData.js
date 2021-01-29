@@ -4,7 +4,7 @@ import classes from '../../Checkout/ContactData/ContactData.css'
 import Axios from '../../../axios-order'
 import Spiner from '../../../Components/UI/Spinner/Spinner' 
 import Input from '../../../Components/UI/Input/Input'
-import { isCompositeComponent } from 'react-dom/test-utils';
+import { connect } from 'react-redux'
 
 class ContactData extends Component {
     state = {
@@ -50,8 +50,6 @@ class ContactData extends Component {
                         },
                         valid: false,
                         touched: false,
-                        valid: false,
-                        touched: false,
                 },
                 zipCode : {
                     elementType: 'input',
@@ -72,8 +70,6 @@ class ContactData extends Component {
                         },
                         valid: false,
                         touched: false,
-                        valid: false,
-                        touched: false,
                 },
                 country: {
                     elementType: 'input',
@@ -91,8 +87,6 @@ class ContactData extends Component {
                             required: 'The input is empty',
                             maxLength: 'the input is too short at least 8 word'
                         },
-                        valid: false,
-                        touched: false,
                         value: '',
                         valid: false
                 },
@@ -115,8 +109,6 @@ class ContactData extends Component {
                         },
                         valid: false,
                         touched: false,
-                        valid: false,
-                        touched: false,
                 },
                 deliveryMethod: {
                     elementType: 'select',
@@ -133,8 +125,6 @@ class ContactData extends Component {
                             required: 'The input is empty',
                             maxLength: 'the input is too short at least 8 word'
                         },
-                        valid: false,
-                        touched: false,
                         valid: true,
                         touched: false,
                 }
@@ -166,7 +156,7 @@ class ContactData extends Component {
 
     orderHandler = (event) => {
         event.preventDefault()
-         this.setState({loadding: false})
+         this.setState({loadding: true})
          let formData = {}
          for (let key in this.state.orderForm) {
              formData[key] = this.state.orderForm[key].value
@@ -243,4 +233,10 @@ class ContactData extends Component {
 
 }
 
-export default ContactData
+const mapStateToProps = (state) => {
+    return {
+        ingredients : state.ingredients
+    }
+}
+
+export default connect(mapStateToProps)(ContactData)

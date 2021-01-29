@@ -20,7 +20,7 @@ import Button from '../../UI/Button/Button'
             <ul>
                 {ingredientSummary}
             </ul>
-            <p>Total burger price without VAT: {props.price} USD </p>
+            <p>Total burger price without VAT: {props.price.toFixed(2)} USD </p>
             <p> Continute to Checkout ? </p>
             <Button btnType="Danger" clicked={props.purchaseRemoveHander} >CANCEL</Button>
             <Button btnType="Success" clicked={props.continuesButtonHandler} >CONTINUE</Button>
