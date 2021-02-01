@@ -45,6 +45,7 @@ class BurgerBuilder extends Component {
 
     purchaseContinueHandler = () => {
         this.props.history.push('/checkout')
+        this.props.onInitPurchases()
     }
 
     removeIngredientHandler = (type) => {
@@ -138,7 +139,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         addIngredientHandler : (type) => dispatch(burgerBuilderAction.addIngredient(type)),
         removeIngredientHandler : (type) => dispatch(burgerBuilderAction.removeIngredient(type)),
-        initStateForIngredients : () => dispatch(burgerBuilderAction.initIngredients())
+        initStateForIngredients : () => dispatch(burgerBuilderAction.initIngredients()),
+        onInitPurchases: () => dispatch(burgerBuilderAction.purchaseInit())
     }
 }
 

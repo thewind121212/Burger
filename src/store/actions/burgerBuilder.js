@@ -15,10 +15,11 @@ export const removeIngredient = (igName) => {
     }
 }
 
-const setIngredients = (ig) => {
+const setIngredients = (ig, price ) => {
     return {
         type: actionTypes.SET_INGREDIENTS,
         name: ig,
+        price: price,
     }
 }
 
@@ -28,11 +29,17 @@ const fetchIngredientsFail = () => {
     }
 }
 
+       
+
 export const initIngredients = () => {
     return dispatch => {
+        let price =  0;
+        Axios.get('https://burget-react-test.firebaseio.com/totalPrice.json')
+            .then ( response => { price =  response.data})
         Axios.get('https://burget-react-test.firebaseio.com/ingredients.json')
             .then(response => {
-                dispatch(setIngredients(response.data))
+                dispatch(setIngredients(response.data, price))
+                console.log(price)
             })
             .catch(error => {
                 dispatch(fetchIngredientsFail())

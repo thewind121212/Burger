@@ -19,10 +19,15 @@ const rootReducer = combineReducers({
   order: orderReducer
 })
 
+
+
+
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk))
 
   
   )
+
+
 
 
 const app = (
